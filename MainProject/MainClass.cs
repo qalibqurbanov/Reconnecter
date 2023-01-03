@@ -4,7 +4,7 @@ namespace MainProject
 {
     struct MainClass
 	{
-		/* ISP-min dns serveri kelle mayallaq gede biler, bu sebeble request etmek istediyim endpointin bir bawa ip adresini verirem url olaraq */
+		/* ISP-min dns serveri her hansi bir sebebe(cokme ve s.) gore iwlemeye biler, bu sebeble request etmek istediyim endpointin bir bawa ip adresini verirem url olaraq */
 		private static string URL { get { return "142.250.189.164"; } } /* google.com */
 
 		/* Hazirda cancel etmirem metodu, daha sonra ehtiyac olar deye yazmiwam. */
