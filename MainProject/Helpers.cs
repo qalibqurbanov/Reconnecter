@@ -14,19 +14,6 @@ namespace MainProject
 {
     public struct Helpers
 	{
-		#region ProcessStartInfo-nun propertyleri ile konsolu yox ede bilmesen bu win32 api metodunu iwlet.
-		/// <summary>
-		/// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo?view=net-7.0">ProcessStartInfo</see>-nun propertyleri ile Process.Start neticesinde yaranan pencereler yox olmursa, bu win32 api-ni iwletmeyi yoxla.
-		/// </summary>
-		/// <param name="hWnd">Yox edilecek pencere.</param>
-		/// <param name="nCmdShow">Veziyyet: 0 - Hide, 1 - Normal, 2 - Minimized, 3 - Maximize. (Etrafli: <see href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow">ShowWindow function (winuser.h)</see>)</param>
-		/// <returns></returns>
-		// [DllImport("user32.dll")]
-		// private static extern Boolean ShowWindow(IntPtr hWnd, Int32 nCmdShow);
-		#endregion ProcessStartInfo-nun propertyleri ile konsolu yox ede bilmesen bu win32 api metodunu iwlet.
-
-
-
 		/// <summary>
 		/// Her defe CMD-de komanda icra edib daha sonra neticenin icerisinden mueyyen bir hisseni extract etmekdense, bir defe extract edib cacheleyirem daha sonra cacheden istifade edirem.
 		/// </summary>
