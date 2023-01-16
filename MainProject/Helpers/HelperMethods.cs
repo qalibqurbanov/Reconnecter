@@ -20,6 +20,8 @@ namespace MainProject.Helpers
 					{
 						/* https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo.createnowindow?view=net-6.0#remarks */
 
+						RedirectStandardOutput = true, /* Konsolun outputu StandartOutput-a yazilsin (ki, ReadToEnd() deyib oxuya bilim konsolun outputunu) */
+
 						ErrorDialog = false, /* Prosesle bagli error pencerelerini gosterme */
 						CreateNoWindow = true, /* Process.Start-in verdiyimiz emri icra etmesi ucun yaranacaq olan konsol penceresi gizledilsin/yaradilmasin */
 						UseShellExecute = false, /* CreateNoWindow - teleb edir */
