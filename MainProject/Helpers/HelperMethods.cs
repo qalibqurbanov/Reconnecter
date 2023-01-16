@@ -9,6 +9,7 @@ namespace MainProject.Helpers
 		/// </summary>
 		/// <param name="FileName">Icra edilecek olan proqram</param>
 		/// <param name="Arguments">Icra edilecek olan proqrama oturmek istediyimiz arqumentler</param>
+		/// <param name="processResult">Metodun daxilinde elde etdiyim konsol outputunu metoddan bayira gondermek ucundur.</param>
 		/// <returns>Proses bawlayib iwini ugurla bitirse TRUE, prosesin iwleyiwi zamani xeta baw verse false dondururuk.</returns>
 		public static bool StartProcess(string FileName, string Arguments, out string processResult)
 		{
