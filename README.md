@@ -3,5 +3,6 @@
 
 ## TODO
 - CacheSsid-ni WiFi-ni dəyişib test et.
-- Hər dəfə proqram açılanda yoxla - proqram autostart-dadırmı?, deyilsə əlavə et.
-- Ehtiyac olsa WriteLine-ların yerinə loqlama et.
+- Hər dəfə proqram açılanda yoxla - proqram autostart-da deyilsə əlavə et autostart-a.
+- Ehtiyac olsa loqlama et.
+- ...
