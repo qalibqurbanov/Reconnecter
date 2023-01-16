@@ -13,7 +13,12 @@ namespace MainProject
 
 		static void Main()
 		{
-			Helpers.CheckOverallStatus(cancelToken, 1d, URL);
+			Helpers.HelperWifiActions.CheckOverallStatus
+			(
+				cancelToken: cancelToken,
+				Interval: 1d,
+				URL: URL
+			);
 		}
 	}
 }
