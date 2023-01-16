@@ -49,31 +49,6 @@ namespace MainProject.Helpers
 
 
 		/// <summary>
-		/// Wifi baglidirmi?
-		/// </summary>
-		/// <returns>WiFi aciqdirsa True, eks halda False dondurur.</returns>
-		public static bool IsDisconnectedFromWifi()
-		{
-			try
-			{
-				if (CachedSsid == null)
-				{
-					Helpers.HelperMethods.StartProcess("ipconfig", null, out _);
-
-					return true;
-				}
-			}
-			catch
-			{
-				return false;
-			}
-
-			return false;
-		}
-
-
-
-		/// <summary>
 		/// Istifadecinin internete cixiwi var?
 		/// </summary>
 		/// <param name="timeoutMs">(Optional) Gondereceyimiz request verdiyimiz zamandan uzun cekse request baw tutmayacaq.</param>
