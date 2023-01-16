@@ -81,8 +81,8 @@ namespace MainProject.Helpers
 		/// <param name="SSID">Istifadecinin hazirda qowulu oldugu wifinin adi(SSID).</param>
 		public static void ReconnectToWifi(string SSID)
 		{
-			Helpers.HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
-			Helpers.HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid= {SSID} name={SSID}", out _);
+			HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
+			HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid= {SSID} name={SSID}", out _);
 		}
 
 
@@ -98,11 +98,11 @@ namespace MainProject.Helpers
 		{
 			while (!cancelToken.IsCancellationRequested)
 			{
-				if (Helpers.HelperWifiActions.GetConnectedWifiSsid() != null) /* istifadeci hazirda qowulub hansisa WiFi-ye? null deyilse demeli qowulub */
+				if (HelperWifiActions.GetConnectedWifiSsid() != null) /* istifadeci hazirda qowulub hansisa WiFi-ye? null deyilse demeli qowulub */
 				{
 					Console.WriteLine("Hazirda wifiye baglanmisan...");
 
-					if (Helpers.HelperWifiActions.CheckForInternetConnection(URL: URL) == true) /* Internet varsa, her wey yaxwidir */
+					if (HelperWifiActions.CheckForInternetConnection(URL: URL) == true) /* Internet varsa, her wey yaxwidir */
 					{
 						Console.WriteLine("Internetin var...");
 					}
@@ -110,14 +110,7 @@ namespace MainProject.Helpers
 					{
 						Console.WriteLine("Internetin yoxdur...");
 
-						try
-						{
-							ReconnectToWifi(CachedSsid);
-						}
-						catch (Exception error)
-						{
-							Console.WriteLine(error.Message);
-						}
+						ReconnectToWifi(CachedSsid);
 					}
 				}
 				else /* Istifadeci hazirda hec bir wifi-ye baglanmayibsa */
