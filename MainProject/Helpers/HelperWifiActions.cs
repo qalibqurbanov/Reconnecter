@@ -1,4 +1,6 @@
-﻿using System;
+﻿// #define TEST
+
+using System;
 using System.Net;
 using System.Threading;
 
@@ -7,13 +9,6 @@ namespace MainProject.Helpers
 	public struct HelperWifiActions
 	{
 		/// <summary>
-		/// Her defe CMD-de komanda icra edib daha sonra neticenin icerisinden mueyyen bir hisseni extract etmekdense, bir defe extract edib cacheleyirem daha sonra cacheden istifade edirem.
-		/// </summary>
-		public static string CachedSsid { get; set; } = null;
-
-
-
-		/// <summary>
 		/// Hazirda qowulu oldugumuz WiFi-nin adini(SSID) dondurur.
 		/// </summary>
 		/// <returns>Hazirda qowulu oldugumuz WiFi-nin adi(SSID), hec bir wifiye qowulu deyilikse NULL dondururuk.</returns>
@@ -21,26 +16,42 @@ namespace MainProject.Helpers
 		{
 			try
 			{
-				if (CachedSsid == null)
-				{
-					string processOutputResult = string.Empty;
-					HelperMethods.StartProcess("netsh.exe", "wlan show interfaces", out processOutputResult);
+				string processOutputResult = null;
+				string SSID = null;
 
-					if (processOutputResult != null)
+				HelperMethods.StartProcess("netsh.exe", "wlan show interfaces", out processOutputResult);
+
+				if (processOutputResult != null)
+				{
+					if (processOutputResult.IndexOf("SSID") > -1) /* WiFi-ye qowulmuwamsa SSID-nin indeksi '-1'-den boyuk olacaq */
 					{
-						string SSID = processOutputResult.Substring(processOutputResult.IndexOf("SSID")); /* SSID-den etibaren bawlayan hisseni gotururem, goturduyum parca bu cur bawlayacaq: "SSID : ..." */
+						SSID = processOutputResult.Substring(processOutputResult.IndexOf("SSID")); /* SSID-den etibaren bawlayan hisseni gotururem, goturduyum parca bu cur bawlayacaq: "SSID : ..." */
 						SSID = SSID.Substring(SSID.IndexOf(":")); /* SSID-ni 'SSID :' iki noqteden etibaren yene parcalayiram. Belece IndexOf ilk qarwilawdigi : simvolundan bawlayan hisseni dondurecek, elimde ": WifiAdi ..." olacaq */
 						SSID = SSID.Substring(2, SSID.IndexOf("\n")).Trim(); /* 2-ci indeksden bawla, yeni setirle qarwilawanadek olan hisseni gotur */
 
-						CachedSsid = SSID;
-					}
+						HelperMethods.CustomizeConsole($"Reconnecter - {SSID}");
 
-					return CachedSsid;
+						return SSID;
+					}
+					else /* WiFi-ye qowulmamiwamsa */
+					{
+#if TEST
+						HelperMethods.CustomizeConsole();
+#endif
+						SSID = null;
+
+						return SSID;
+					}
 				}
-				else return CachedSsid;
+
+				return SSID;
 			}
 			catch
 			{
+#if TEST
+                HelperMethods.CustomizeConsole();
+#endif
+
 				return null;
 			}
 		}
@@ -78,7 +89,7 @@ namespace MainProject.Helpers
 		/// Wifiden cixib yeniden baglan.
 		/// </summary>
 		/// <param name="SSID">Istifadecinin hazirda qowulu oldugu wifinin adi(SSID).</param>
-		public static void ReconnectToWifi(string SSID)
+		public static void ReconnectToWifi(string SSID) /* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki emr  */
 		{
 			HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
 			HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid= {SSID} name={SSID}", out _);
@@ -108,14 +119,18 @@ namespace MainProject.Helpers
 					{
 						Console.WriteLine("Internetin yoxdur...");
 
-						ReconnectToWifi(CachedSsid);
+						ReconnectToWifi(GetConnectedWifiSsid());
 					}
 				}
 				else /* Istifadeci hazirda hec bir wifi-ye baglanmayibsa */
 				{
 					Console.WriteLine("Hazirda wifiye baglanmamisan...");
 
-					ReconnectToWifi(CachedSsid);
+#if TEST
+					HelperMethods.CustomizeConsole();
+#endif
+
+					ReconnectToWifi(GetConnectedWifiSsid());
 				}
 
 				Thread.Sleep(TimeSpan.FromSeconds(Interval));

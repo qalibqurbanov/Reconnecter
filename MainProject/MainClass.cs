@@ -1,10 +1,11 @@
-﻿using System;
+﻿// #define TEST
+
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Linq;
 using MainProject.Helpers;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MainProject
 {
@@ -23,16 +24,24 @@ namespace MainProject
 
 		static void Main()
 		{
-			Console.Title = $"Reconnecter - {HelperWifiActions.CachedSsid}";
-			Console.ForegroundColor = ConsoleColor.Magenta;
+			if (!HelperMethods.isAnotherInstanceWorking("Reconnecter"))
+			{
+				Environment.Exit(0);
+				return;
+			}
+
+#if TEST
+			HelperMethods.CustomizeConsole();
+#endif
 
 			string[] args = Environment.GetCommandLineArgs();
 			if (args.Contains("-del") == true)
 			{
-				cancelTokenSource.Cancel();
 				HelperMethods.RemoveFromStartup(ExecutableName);
 
 				Environment.Exit(0);
+
+				/* App-e artiq ehtiyacimiz yoxdursa '-del' arqumentiyle acib reyestrdan celd sile bilerik */
 			}
 			else
 			{

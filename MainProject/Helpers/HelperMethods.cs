@@ -1,5 +1,9 @@
-﻿using System;
+﻿// #define TEST
+
+using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.Win32;
 
 namespace MainProject.Helpers
@@ -97,11 +101,55 @@ namespace MainProject.Helpers
 		{
 			try
 			{
-				OpenStartupKey().DeleteValue(KeyName, false);
+				if (OpenStartupKey().GetValue(KeyName) != null)
+				{
+					OpenStartupKey().DeleteValue(KeyName, false);
 
-				Console.WriteLine("Silindi...");
+					Console.WriteLine("Silindi...");
+				}
 			}
 			catch { }
+		}
+
+
+
+        /// <summary>
+        /// App-in bawqa bir orneyinin aciq ve ya bagli olmagindan asilir olaraq geriye boolean deyer dondurur.
+		/// </summary>
+        /// <param name="AppName"></param>
+        /// <returns>App-in bawqa bir orneyi aciq deyilse true, aciqdirsa false dondurur.</returns>
+        public static bool isAnotherInstanceWorking(string AppName) /* Bu metod yoxlayirki, proqram evvelceden aciqdir ya yox? */
+		{
+			Mutex.TryOpenExisting(AppName, out Mutex existingApp); /* Eger 'ProqramAdi' parametrine gelen proqram aciqdirsa, metod true dondurecek ve hemin proqram verilecek Mtx deyiwenine */
+
+			if (existingApp == null) /* existingApp null-dirsa, demeli, evvelceden bu proqram acilmiyib, hele yeni acilacaq. */
+			{
+				existingApp = new Mutex(true, AppName);
+
+				return true;
+			}
+			else
+			{
+				existingApp.Close();
+
+				return false;
+			}
+		}
+
+
+
+
+		/// <summary>
+		/// Konsolun gorunuwuyle elaqeli deyiwiklikleri eden metod.
+		/// </summary>
+		/// <param name="Title">Konsolun bawligi.</param>
+		/// <param name="TextColor">Konsolda yazi rengi.</param>
+		public static void CustomizeConsole(string Title = "Reconnecter", ConsoleColor TextColor = ConsoleColor.Magenta)
+		{
+#if TEST
+			Console.Title = Title;
+			Console.ForegroundColor = TextColor;
+#endif
 		}
 	}
 }
