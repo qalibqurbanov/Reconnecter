@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Win32;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MainProject.Helpers
 {

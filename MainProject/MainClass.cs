@@ -2,9 +2,8 @@
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using MainProject.Helpers;
-using Microsoft.Win32;
 using System.Linq;
+using MainProject.Helpers;
 
 namespace MainProject
 {
