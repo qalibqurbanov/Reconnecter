@@ -68,12 +68,12 @@ namespace MainProject.Helpers
 
 
 
-        /// <summary>
-        /// Proqrami startup-a elave edir.
-        /// </summary>
-        /// <param name="KeyName">Yaradilacaq Key-in adi.</param>
+		/// <summary>
+		/// Proqrami startup-a elave edir.
+		/// </summary>
+		/// <param name="KeyName">Yaradilacaq Key-in adi.</param>
 		/// <param name="ApplicationPath">Yaradilacaq Key-in Value-su.</param>
-        public static void AddToStartup(string KeyName, string ApplicationPath)
+		public static void AddToStartup(string KeyName, string ApplicationPath)
 		{
 			try
 			{
@@ -94,10 +94,10 @@ namespace MainProject.Helpers
 		/// </summary>
 		/// <param name="KeyName">Silinecek olan Key-in adi.</param>
 		public static void RemoveFromStartup(string KeyName)
-        {
+		{
 			try
 			{
-                OpenStartupKey().DeleteValue(KeyName, false);
+				OpenStartupKey().DeleteValue(KeyName, false);
 
 				Console.WriteLine("Silindi...");
 			}

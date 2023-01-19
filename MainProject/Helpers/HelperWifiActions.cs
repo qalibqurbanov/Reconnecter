@@ -4,12 +4,12 @@ using System.Threading;
 
 namespace MainProject.Helpers
 {
-    public struct HelperWifiActions
+	public struct HelperWifiActions
 	{
 		/// <summary>
 		/// Her defe CMD-de komanda icra edib daha sonra neticenin icerisinden mueyyen bir hisseni extract etmekdense, bir defe extract edib cacheleyirem daha sonra cacheden istifade edirem.
 		/// </summary>
-		private static string CachedSsid { get; set; } = null;
+		public static string CachedSsid { get; set; } = null;
 
 
 
@@ -92,16 +92,15 @@ namespace MainProject.Helpers
 		/// <param name="cancelToken">Metodun iwin sonlandirmaq ucundur.</param>
 		/// <param name="Interval">Hansi araliqlarla yoxlaniw aparilsin.</param>
 		/// <param name="URL">Internetin olub-olmadigini yoxlamaq ucun hansi endpointe sorgu gonderilsin.</param>
-		/// <param name="SSID">Istifadecinin hazirda qowulu oldugu wifinin adi(SSID).</param>
 		public static void CheckOverallStatus(CancellationToken cancelToken, double Interval, string URL)
 		{
 			while (!cancelToken.IsCancellationRequested)
 			{
-				if (HelperWifiActions.GetConnectedWifiSsid() != null) /* istifadeci hazirda qowulub hansisa WiFi-ye? null deyilse demeli qowulub */
+				if (GetConnectedWifiSsid() != null) /* istifadeci hazirda qowulub hansisa WiFi-ye? null deyilse demeli qowulub */
 				{
 					Console.WriteLine("Hazirda wifiye baglanmisan...");
 
-					if (HelperWifiActions.CheckForInternetConnection(URL: URL) == true) /* Internet varsa, her wey yaxwidir */
+					if (CheckForInternetConnection(URL: URL) == true) /* Internet varsa, her wey yaxwidir */
 					{
 						Console.WriteLine("Internetin var...");
 					}
