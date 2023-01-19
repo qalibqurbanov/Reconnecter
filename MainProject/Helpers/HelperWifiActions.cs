@@ -116,9 +116,11 @@ namespace MainProject.Helpers
 				else /* Istifadeci hazirda hec bir wifi-ye baglanmayibsa */
 				{
 					Console.WriteLine("Hazirda wifiye baglanmamisan...");
+
+					ReconnectToWifi(CachedSsid);
 				}
 
-				Task.Delay(TimeSpan.FromSeconds(Interval));
+				Thread.Sleep(TimeSpan.FromSeconds(Interval));
 			}
 		}
 	}
