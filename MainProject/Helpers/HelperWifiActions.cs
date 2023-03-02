@@ -1,7 +1,9 @@
 ﻿// #define TEST
 
 using System;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading;
 
 namespace MainProject.Helpers
@@ -91,19 +93,35 @@ namespace MainProject.Helpers
 		/// <param name="SSID">Istifadecinin hazirda qowulu oldugu wifinin adi(SSID).</param>
 		public static void ReconnectToWifi(string SSID) /* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki emr  */
 		{
-			HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
-			HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid= {SSID} name={SSID}", out _);
-		}
+            // HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
+
+			NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces().First(net =>
+						   net.NetworkInterfaceType != NetworkInterfaceType.Loopback
+						&& net.NetworkInterfaceType != NetworkInterfaceType.Tunnel
+						&& net.OperationalStatus == OperationalStatus.Up
+						&& net.Name.StartsWith("vEthernet"));
+
+			if(activeInterface != null)
+			{
+                HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" disabled ", out _);
+                HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" enabled ", out _);
+                HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid={SSID} name={SSID}", out _);
+            }
+#if TEST
+					HelperMethods.CustomizeConsole();
+					Console.WriteLine("Kompyuterinizde hec bir network interfeysi aktiv deyil...";
+#endif
+        }
 
 
 
-		/// <summary>
-		/// Butun prosesler bu metodun icerisinde baw verir.
-		/// </summary>
-		/// <param name="cancelToken">Metodun iwin sonlandirmaq ucundur.</param>
-		/// <param name="Interval">Hansi araliqlarla yoxlaniw aparilsin.</param>
-		/// <param name="URL">Internetin olub-olmadigini yoxlamaq ucun hansi endpointe sorgu gonderilsin.</param>
-		public static void CheckOverallStatus(CancellationToken cancelToken, double Interval, string URL)
+        /// <summary>
+        /// Butun prosesler bu metodun icerisinde baw verir.
+        /// </summary>
+        /// <param name="cancelToken">Metodun iwin sonlandirmaq ucundur.</param>
+        /// <param name="Interval">Hansi araliqlarla yoxlaniw aparilsin.</param>
+        /// <param name="URL">Internetin olub-olmadigini yoxlamaq ucun hansi endpointe sorgu gonderilsin.</param>
+        public static void CheckOverallStatus(CancellationToken cancelToken, double Interval, string URL)
 		{
 			while (!cancelToken.IsCancellationRequested)
 			{
