@@ -12,8 +12,8 @@ namespace MainProject
 {
 	class MainClass
 	{
-		/* ISP-min dns serveri her hansi bir sebebe(cokme ve s.) gore iwlemeye biler, bu sebeble request etmek istediyim endpointin bir bawa ip adresini verirem url olaraq: */
-		private static string URL { get { return "142.250.189.164"; } } /* google.com */
+		/* OS-in veya brauzerin dns kewinde, ISP-de ve ya Root Name Serverde url-ime qarwiliq ip, her hansi bir sebebe gore tapilmaya biler, ona gore request etmek istediyim endpointin bir bawa ip adresini verirem url olaraq: */
+		private static string URL { get { return "140.82.121.4/qalibqurbanov/Reconnecter"; } }
 
 		/* Reyestrda hansi adla Key yaradacam ve yaratdigim Key-in value-su ne olacaq? sadaladigim bu 2 elementin qarwiliqlari: */
 		private static string ExecutablePath { get; } = Assembly.GetExecutingAssembly().Location;                                    // KeyName
@@ -40,12 +40,12 @@ namespace MainProject
 			string[] args = Environment.GetCommandLineArgs();
 			if (args.Contains("-del") == true)
 			{
-                cancelTokenSource.Cancel();
+				cancelTokenSource.Cancel();
 
-                HelperMethods.RemoveFromStartup(ExecutableName);
-                HelperMethods.StartProcess("taskkill.exe", $"/im {Process.GetCurrentProcess().ProcessName} /f /t", out _);
+				HelperMethods.RemoveFromStartup(ExecutableName);
+				HelperMethods.StartProcess("taskkill.exe", $"/im {Process.GetCurrentProcess().ProcessName} /f /t", out _);
 
-                Environment.Exit(0);
+				Environment.Exit(0);
 			}
 			else
 			{
@@ -58,7 +58,7 @@ namespace MainProject
 					URL: URL
 				);
 			}
-            #endregion Argument: -del
-        }
-    }
+			#endregion Argument: -del
+		}
+	}
 }

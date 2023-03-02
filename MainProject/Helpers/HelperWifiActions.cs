@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 using System.Threading;
 
 namespace MainProject.Helpers
@@ -31,7 +32,9 @@ namespace MainProject.Helpers
 						SSID = SSID.Substring(SSID.IndexOf(":")); /* SSID-ni 'SSID :' iki noqteden etibaren yene parcalayiram. Belece IndexOf ilk qarwilawdigi : simvolundan bawlayan hisseni dondurecek, elimde ": WifiAdi ..." olacaq */
 						SSID = SSID.Substring(2, SSID.IndexOf("\n")).Trim(); /* 2-ci indeksden bawla, yeni setirle qarwilawanadek olan hisseni gotur */
 
+#if TEST
 						HelperMethods.CustomizeConsole($"Reconnecter - {SSID}");
+#endif
 
 						return SSID;
 					}
@@ -63,21 +66,21 @@ namespace MainProject.Helpers
 		/// <summary>
 		/// Istifadecinin internete cixiwi var?
 		/// </summary>
-		/// <param name="timeoutMs">(Optional) Gondereceyimiz request verdiyimiz zamandan uzun cekse request baw tutmayacaq.</param>
 		/// <param name="URL">(Optional) Internetin olub-olmadigini yoxlamaq meqsedile hansi url-e request gonderilsin?</param>
+		/// <param name="TimeoutMs">(Optional) Gondereceyimiz request verdiyimiz zamandan uzun cekse request baw tutmayacaq.</param>
 		/// <returns>Internet varsa TRUE dondurecek, eks halda FALSE dondururuk.</returns>
-		public static bool CheckForInternetConnection(string URL, int timeoutMs = 10000)
+		public static bool CheckForInternetConnection(string URL, int TimeoutMs = 10000)
 		{
 			URL = new UriBuilder(Uri.UriSchemeHttp, URL).Uri.ToString(); /* Elimde olan endpoint adresi ip formasindadir deye, verdiyim ip esasini url formasina saliram: https://IP/ */
 
 			try
 			{
-				var httpRequest = (HttpWebRequest)WebRequest.Create(URL);
+				HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(URL);
 				httpRequest.KeepAlive = false;
-				httpRequest.Timeout = timeoutMs;
+				httpRequest.Timeout = TimeoutMs;
 				httpRequest.Proxy = null;
 
-				using (var httpResponse = httpRequest.GetResponse()) return true;
+				using (var httpResponse = httpRequest.GetResponse()) { return true; }
 			}
 			catch
 			{
@@ -93,63 +96,71 @@ namespace MainProject.Helpers
 		/// <param name="SSID">Istifadecinin hazirda qowulu oldugu wifinin adi(SSID).</param>
 		public static void ReconnectToWifi(string SSID) /* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki emr  */
 		{
-            // HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
+			// HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
 
-            /* Network Interfeysi axtariwi lazimsiz interfeysleri aradan cixartmaq uzerinedir. Eger interfeys:
-					> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network deyilse,
-					> Interfeys iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
-					> Hyper-V-ye aid interfeys deyilse
-				:tapilan ilk interfeysi secirem.
+			/*
+				Network Interfeysi axtariwi lazimsiz interfeysleri aradan cixartmaq uzerinedir. Eger interfeys:
+						> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network deyilse,
+						> Interfeys iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
+						> Hyper-V-ye aid interfeys deyilse
+					:tapilan ilk interfeysi secirem.
+
+				+ Ne vaxtsa iwlemese ya WMI-dan ya da "netsh wlan show interfaces" emrinden kes gotur interfeys adini.
 			*/
-            NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces()?.FirstOrDefault(net =>
+			NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces()?.FirstOrDefault(net =>
 					net.NetworkInterfaceType != NetworkInterfaceType.Loopback && net.NetworkInterfaceType != NetworkInterfaceType.Tunnel &&
 					net.OperationalStatus == OperationalStatus.Up &&
 					net.Name.StartsWith("vEthernet") == false);
 
-			if(activeInterface != null)
+			if (activeInterface != null)
 			{
-                HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" disabled ", out _);
-                HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" enabled ", out _);
-                HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid={SSID} name={SSID}", out _);
-            }
+				HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" disabled ", out _);
+				HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" enabled ", out _);
+				HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid={SSID} name={SSID}", out _);
+			}
 #if TEST
 					HelperMethods.CustomizeConsole();
 					Console.WriteLine("Kompyuterinizde hec bir network interfeysi aktiv deyil...";
 #endif
-        }
+		}
 
 
 
-        /// <summary>
-        /// Butun prosesler bu metodun icerisinde baw verir.
-        /// </summary>
-        /// <param name="cancelToken">Metodun iwin sonlandirmaq ucundur.</param>
-        /// <param name="Interval">Hansi araliqlarla yoxlaniw aparilsin.</param>
-        /// <param name="URL">Internetin olub-olmadigini yoxlamaq ucun hansi endpointe sorgu gonderilsin.</param>
-        public static void CheckOverallStatus(CancellationToken cancelToken, double Interval, string URL)
+		/// <summary>
+		/// Butun prosesler bu metodun icerisinde baw verir.
+		/// </summary>
+		/// <param name="cancelToken">Metodun iwin sonlandirmaq ucundur.</param>
+		/// <param name="Interval">Hansi araliqlarla yoxlaniw aparilsin.</param>
+		/// <param name="URL">Internetin olub-olmadigini yoxlamaq ucun hansi endpointe sorgu gonderilsin.</param>
+		public static void CheckOverallStatus(CancellationToken cancelToken, double Interval, string URL)
 		{
 			while (!cancelToken.IsCancellationRequested)
 			{
 				if (GetConnectedWifiSsid() != null) /* istifadeci hazirda qowulub hansisa WiFi-ye? null deyilse demeli qowulub */
 				{
+#if TEST
 					Console.WriteLine("Hazirda wifiye baglanmisan...");
-
+#endif
 					if (CheckForInternetConnection(URL: URL) == true) /* Internet varsa, her wey yaxwidir */
 					{
+#if TEST
 						Console.WriteLine("Internetin var...");
+#endif
 					}
 					else /* Internet yoxdursa, reconnect edirik */
 					{
-						Console.WriteLine("Internetin yoxdur...");
+#if TEST
+                        Console.WriteLine("Internetin yoxdur...");
+#endif
 
 						ReconnectToWifi(GetConnectedWifiSsid());
 					}
 				}
 				else /* Istifadeci hazirda hec bir wifi-ye baglanmayibsa */
 				{
+#if TEST
 					Console.WriteLine("Hazirda wifiye baglanmamisan...");
 
-#if TEST
 					HelperMethods.CustomizeConsole();
 #endif
 
