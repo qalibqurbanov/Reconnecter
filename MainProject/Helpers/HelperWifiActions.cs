@@ -95,11 +95,16 @@ namespace MainProject.Helpers
 		{
             // HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
 
-			NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces().First(net =>
-						   net.NetworkInterfaceType != NetworkInterfaceType.Loopback
-						&& net.NetworkInterfaceType != NetworkInterfaceType.Tunnel
-						&& net.OperationalStatus == OperationalStatus.Up
-						&& net.Name.StartsWith("vEthernet"));
+            /* Network Interfeysi axtariwi lazimsiz interfeysleri aradan cixartmaq uzerinedir. Eger interfeys:
+					> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network deyilse,
+					> Interfeys iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
+					> Hyper-V-ye aid interfeys deyilse
+				:tapilan ilk interfeysi secirem.
+			*/
+            NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces()?.FirstOrDefault(net =>
+					net.NetworkInterfaceType != NetworkInterfaceType.Loopback && net.NetworkInterfaceType != NetworkInterfaceType.Tunnel &&
+					net.OperationalStatus == OperationalStatus.Up &&
+					net.Name.StartsWith("vEthernet") == false);
 
 			if(activeInterface != null)
 			{

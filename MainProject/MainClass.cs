@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Linq;
 using MainProject.Helpers;
+using System.Diagnostics;
 
 namespace MainProject
 {
@@ -24,7 +25,7 @@ namespace MainProject
 
 		static void Main()
 		{
-			if (!HelperMethods.isAnotherInstanceWorking("Reconnecter"))
+			if (!HelperMethods.isAnotherInstanceWorking(ExecutableName))
 			{
 				Environment.Exit(0);
 				return;
@@ -34,14 +35,17 @@ namespace MainProject
 			HelperMethods.CustomizeConsole();
 #endif
 
+			#region Argument: -del
+			/* App-e artiq ehtiyacimiz yoxdursa '-del' arqumentiyle acib eyni anda hem reyestrdan celd sile hemde prosesi sonlandira bilerik. */
 			string[] args = Environment.GetCommandLineArgs();
 			if (args.Contains("-del") == true)
 			{
-				HelperMethods.RemoveFromStartup(ExecutableName);
+                cancelTokenSource.Cancel();
 
-				Environment.Exit(0);
+                HelperMethods.RemoveFromStartup(ExecutableName);
+                HelperMethods.StartProcess("taskkill.exe", $"/im {Process.GetCurrentProcess().ProcessName} /f /t", out _);
 
-				/* App-e artiq ehtiyacimiz yoxdursa '-del' arqumentiyle acib reyestrdan celd sile bilerik */
+                Environment.Exit(0);
 			}
 			else
 			{
@@ -54,6 +58,7 @@ namespace MainProject
 					URL: URL
 				);
 			}
-		}
-	}
+            #endregion Argument: -del
+        }
+    }
 }
