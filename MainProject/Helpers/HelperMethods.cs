@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using Microsoft.Win32;
 
@@ -113,12 +114,12 @@ namespace MainProject.Helpers
 
 
 
-        /// <summary>
-        /// App-in bawqa bir orneyinin aciq ve ya bagli olmagindan asilir olaraq geriye boolean deyer dondurur.
+		/// <summary>
+		/// App-in bawqa bir orneyinin aciq ve ya bagli olmagindan asilir olaraq geriye boolean deyer dondurur.
 		/// </summary>
-        /// <param name="AppName"></param>
-        /// <returns>App-in bawqa bir orneyi aciq deyilse true, aciqdirsa false dondurur.</returns>
-        public static bool isAnotherInstanceWorking(string AppName) /* Bu metod yoxlayirki, proqram evvelceden aciqdir ya yox? */
+		/// <param name="AppName"></param>
+		/// <returns>App-in bawqa bir orneyi aciq deyilse true, aciqdirsa false dondurur.</returns>
+		public static bool isAnotherInstanceWorking(string AppName) /* Bu metod yoxlayirki, proqram evvelceden aciqdir ya yox? */
 		{
 			Mutex.TryOpenExisting(AppName, out Mutex existingApp); /* Eger 'ProqramAdi' parametrine gelen proqram aciqdirsa, metod true dondurecek ve hemin proqram verilecek Mtx deyiwenine */
 

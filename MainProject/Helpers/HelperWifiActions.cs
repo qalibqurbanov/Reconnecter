@@ -23,7 +23,7 @@ namespace MainProject.Helpers
 
 				HelperMethods.StartProcess("netsh.exe", "wlan show interfaces", out processOutputResult);
 
-				if (processOutputResult != null)
+				if (processOutputResult != null) /* Umumiyyetle wireless network interfeysi/profili var mi hec? */
 				{
 					if (processOutputResult.IndexOf("SSID") > -1) /* WiFi-ye qowulmuwamsa SSID-nin indeksi '-1'-den boyuk olacaq */
 					{
@@ -42,13 +42,11 @@ namespace MainProject.Helpers
 #if TEST
 						HelperMethods.CustomizeConsole();
 #endif
-						SSID = null;
-
-						return SSID;
+						return null;
 					}
 				}
 
-				return SSID;
+				return null;
 			}
 			catch
 			{
@@ -93,8 +91,10 @@ namespace MainProject.Helpers
 		/// Wifiden cixib yeniden baglan.
 		/// </summary>
 		/// <param name="SSID">Istifadecinin hazirda qowulu oldugu wifinin adi(SSID).</param>
-		public static void ReconnectToWifi(string SSID) /* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki emr  */
+		public static void ReconnectToWifi(string SSID)
 		{
+			/* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki connect emri. */
+
 			// HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
 
 			/*
@@ -116,6 +116,8 @@ namespace MainProject.Helpers
 				HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" disabled ", out _);
 				HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" enabled ", out _);
 				HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid={SSID} name={SSID}", out _);
+
+				Thread.Sleep(1000); /* WiFi-ye baglandiqdan sonra her ehtimala qarwi 1 deyqe gozle. (Test ucundur: hazirda, wifi-ye sonsuz reconnect etmeye caliwir, wifiye giren saniye internet baglantisi yoxluyur ve baglantinin olmagiyla qarwilawmir hemin saniye deye, tezeden reconnect etmeye caliwir, threadi 1 saniye gozlet wifiye baglandiqdan, yeni reconnect etdikden sonra ve gor problem hell olur?) */
 			}
 #if TEST
 					HelperMethods.CustomizeConsole();
@@ -135,25 +137,28 @@ namespace MainProject.Helpers
 		{
 			while (!cancelToken.IsCancellationRequested)
 			{
-				if (GetConnectedWifiSsid() != null) /* istifadeci hazirda qowulub hansisa WiFi-ye? null deyilse demeli qowulub */
+				string WifiSsid = GetConnectedWifiSsid();
+
+				if (WifiSsid != null) /* istifadeci hazirda qowulub hansisa WiFi-ye? null deyilse demeli qowulub */
 				{
 #if TEST
 					Console.WriteLine("Hazirda wifiye baglanmisan...");
 #endif
-					if (CheckForInternetConnection(URL: URL) == true) /* Internet varsa, her wey yaxwidir */
-					{
-#if TEST
-						Console.WriteLine("Internetin var...");
-#endif
-					}
-					else /* Internet yoxdursa, reconnect edirik */
+					if (CheckForInternetConnection(URL: URL) == false) /* Internet yoxdursa, reconnect edirik */
 					{
 #if TEST
                         Console.WriteLine("Internetin yoxdur...");
 #endif
 
-						ReconnectToWifi(GetConnectedWifiSsid());
+						ReconnectToWifi(WifiSsid);
 					}
+#if TEST
+					else /* Internet varsa, her wey yaxwidir */
+                    {
+
+						Console.WriteLine("Internetin var...");
+					}
+#endif
 				}
 				else /* Istifadeci hazirda hec bir wifi-ye baglanmayibsa */
 				{
@@ -163,7 +168,7 @@ namespace MainProject.Helpers
 					HelperMethods.CustomizeConsole();
 #endif
 
-					ReconnectToWifi(GetConnectedWifiSsid());
+					ReconnectToWifi(WifiSsid);
 				}
 
 				Thread.Sleep(TimeSpan.FromSeconds(Interval));
