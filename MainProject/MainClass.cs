@@ -2,11 +2,11 @@
 
 using System;
 using System.IO;
-using System.Reflection;
-using System.Threading;
 using System.Linq;
-using MainProject.Helpers;
+using System.Threading;
+using System.Reflection;
 using System.Diagnostics;
+using MainProject.Helpers;
 
 namespace MainProject
 {
@@ -35,7 +35,6 @@ namespace MainProject
 			HelperMethods.CustomizeConsole();
 #endif
 
-			#region Argument: -del
 			/* App-e artiq ehtiyacimiz yoxdursa '-del' arqumentiyle acib eyni anda hem reyestrdan celd sile hemde prosesi sonlandira bilerik. */
 			string[] args = Environment.GetCommandLineArgs();
 			if (args.Contains("-del") == true)
@@ -58,7 +57,6 @@ namespace MainProject
 					URL: URL
 				);
 			}
-			#endregion Argument: -del
 		}
 	}
 }

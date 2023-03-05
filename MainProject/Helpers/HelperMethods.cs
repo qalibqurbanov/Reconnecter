@@ -1,11 +1,9 @@
 ﻿// #define TEST
 
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using Microsoft.Win32;
+using System.Threading;
+using System.Diagnostics;
 
 namespace MainProject.Helpers
 {
@@ -69,7 +67,10 @@ namespace MainProject.Helpers
 		/// Hazirki User-in reyestr bolmesindeki Startup qeydlerinin yerlewdiyi Key-i (+ hemin key uzerinde her iwi gore bileceyimiz icaze ile) acir, bawqa sozle kecid edir.
 		/// </summary>
 		/// <returns>Reyestrda kecid etdiyimiz bolmeni dondurur.</returns>
-		public static RegistryKey OpenStartupKey() => Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", RegistryKeyPermissionCheck.ReadWriteSubTree, System.Security.AccessControl.RegistryRights.FullControl);
+		public static RegistryKey OpenStartupKey()
+		{
+			return Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", RegistryKeyPermissionCheck.ReadWriteSubTree, System.Security.AccessControl.RegistryRights.FullControl);
+		}
 
 
 
@@ -136,7 +137,6 @@ namespace MainProject.Helpers
 				return false;
 			}
 		}
-
 
 
 

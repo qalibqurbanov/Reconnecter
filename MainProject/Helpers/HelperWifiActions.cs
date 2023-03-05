@@ -10,6 +10,22 @@ namespace MainProject.Helpers
 {
 	public struct HelperWifiActions
 	{
+		/*
+				Network Interfeysi axtariwi lazimsiz interfeysleri aradan cixartmaq uzerinedir. Eger interfeys:
+						> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network deyilse,
+						> Interfeys iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
+						> Hyper-V-ye aid interfeys deyilse
+					:tapilan ilk interfeysi secirem.
+
+				+ Ne vaxtsa iwlemese ya WMI-dan ya da "netsh wlan show interfaces" emrinden kes gotur interfeys adini.
+			*/
+		private static readonly NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces()?.FirstOrDefault(net =>
+				net.NetworkInterfaceType != NetworkInterfaceType.Loopback && net.NetworkInterfaceType != NetworkInterfaceType.Tunnel &&
+				net.OperationalStatus == OperationalStatus.Up &&
+				net.Name.StartsWith("vEthernet") == false);
+
+
+
 		/// <summary>
 		/// Hazirda qowulu oldugumuz WiFi-nin adini(SSID) dondurur.
 		/// </summary>
@@ -93,26 +109,11 @@ namespace MainProject.Helpers
 		/// <param name="SSID">Istifadecinin hazirda qowulu oldugu wifinin adi(SSID).</param>
 		public static void ReconnectToWifi(string SSID)
 		{
-			/* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki connect emri. */
-
-			// HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
-
-			/*
-				Network Interfeysi axtariwi lazimsiz interfeysleri aradan cixartmaq uzerinedir. Eger interfeys:
-						> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network deyilse,
-						> Interfeys iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
-						> Hyper-V-ye aid interfeys deyilse
-					:tapilan ilk interfeysi secirem.
-
-				+ Ne vaxtsa iwlemese ya WMI-dan ya da "netsh wlan show interfaces" emrinden kes gotur interfeys adini.
-			*/
-			NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces()?.FirstOrDefault(net =>
-					net.NetworkInterfaceType != NetworkInterfaceType.Loopback && net.NetworkInterfaceType != NetworkInterfaceType.Tunnel &&
-					net.OperationalStatus == OperationalStatus.Up &&
-					net.Name.StartsWith("vEthernet") == false);
-
 			if (activeInterface != null)
 			{
+				/* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki connect emri. */
+
+				// HelperMethods.StartProcess("netsh.exe", "wlan disconnect", out _);
 				HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" disabled ", out _);
 				HelperMethods.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" enabled ", out _);
 				HelperMethods.StartProcess("netsh.exe", $"wlan connect ssid={SSID} name={SSID}", out _);
@@ -144,7 +145,7 @@ namespace MainProject.Helpers
 #if TEST
 					Console.WriteLine("Hazirda wifiye baglanmisan...");
 #endif
-					if (CheckForInternetConnection(URL: URL) == false) /* Internet yoxdursa, reconnect edirik */
+					if (CheckForInternetConnection(URL) == false) /* Internet yoxdursa, reconnect edirik */
 					{
 #if TEST
                         Console.WriteLine("Internetin yoxdur...");
