@@ -1,24 +1,24 @@
 ﻿// #define TEST
 
 using System;
-using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
+using System.Linq;
 using System.Threading;
+using System.Net.NetworkInformation;
 
 namespace MainProject.Helpers
 {
 	public struct HelperWifiActions
 	{
 		/*
-				Network Interfeysi axtariwi lazimsiz interfeysleri aradan cixartmaq uzerinedir. Eger interfeys:
-						> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network deyilse,
-						> Interfeys iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
-						> Hyper-V-ye aid interfeys deyilse
-					:tapilan ilk interfeysi secirem.
+			Network Interfeysi axtariwi lazimsiz interfeysleri aradan cixartmaq uzerinedir. Eger interfeys:
+					> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network deyilse,
+					> Interfeys iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
+					> Hyper-V-ye aid interfeys deyilse
+				:tapilan ilk interfeysi secirem.
 
-				+ Ne vaxtsa iwlemese ya WMI-dan ya da "netsh wlan show interfaces" emrinden kes gotur interfeys adini.
-			*/
+			+ Ne vaxtsa iwlemese ya WMI-dan ya da "netsh wlan show interfaces" emrinden kes gotur interfeys adini.
+		*/
 		private static readonly NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces()?.FirstOrDefault(net =>
 				net.NetworkInterfaceType != NetworkInterfaceType.Loopback && net.NetworkInterfaceType != NetworkInterfaceType.Tunnel &&
 				net.OperationalStatus == OperationalStatus.Up &&
@@ -84,7 +84,10 @@ namespace MainProject.Helpers
 		/// <returns>Internet varsa TRUE dondurecek, eks halda FALSE dondururuk.</returns>
 		public static bool CheckForInternetConnection(string URL, int TimeoutMs = 10000)
 		{
-			URL = new UriBuilder(Uri.UriSchemeHttp, URL).Uri.ToString(); /* Elimde olan endpoint adresi ip formasindadir deye, verdiyim ip esasini url formasina saliram: https://IP/ */
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3; /* Sorgu zamani iwledilecek security protokolu */
+			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; }; /* Serverdeki sertifikatin yoxlaniwini iqnor edirik */
+
+			URL = new UriBuilder(Uri.UriSchemeHttps, URL).Uri.ToString(); /* Elimde olan endpoint adresi ip formasindadir deye, verdiyim IP-ni URL formasina saliram: https://IP/ */
 
 			try
 			{
