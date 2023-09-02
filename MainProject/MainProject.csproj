@@ -50,8 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\HelperMethods.cs" />
-    <Compile Include="Helpers\HelperWifiActions.cs" />
+    <Compile Include="Helpers\TestHelpers.cs" />
+    <Compile Include="Helpers\WifiHelpers.cs" />
+    <Compile Include="Helpers\ProcessHelpers.cs" />
+    <Compile Include="Helpers\RegistryHelpers.cs" />
     <Compile Include="MainClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
