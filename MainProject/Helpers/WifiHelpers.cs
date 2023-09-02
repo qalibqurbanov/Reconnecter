@@ -8,6 +8,9 @@ using System.Net.NetworkInformation;
 
 namespace MainProject.Helpers
 {
+	/// <summary>
+	/// WiFi ile elaqeli funksionalliqlari saxlayir.
+	/// </summary>
 	public static class WifiHelpers
 	{
 		/// <summary>
@@ -20,14 +23,14 @@ namespace MainProject.Helpers
 			net.OperationalStatus == OperationalStatus.Up &&
 			net.Name.StartsWith("vEthernet") == false
 
-        /*
+		/*
 			* Network Interface/Adapter Card-in axtariwi lazimsiz interfeysleri aradan cixarmaq uzerinedir. Eger interfeys:
 					> Loopback(esasen testing ucun iwledilir) ve ya Tunnel(tunelling, datanin network uzerinden, bawqa sozle bir networkden digerine tehlukesiz gonderilmeyi ucun iwledilen bir yoldur/metoddur, daha cox VPN-ler tetbiq edir) network interface deyilse,
 					> iwleyirse, yeni hazirda data paketi gondere ve ya qebul ede bilirse,
 					> "Hyper-V"-ye aid network interface deyilse
 				:tapilan ilk interfeysi secirem.
 		*/
-        ); /* WiFi-i On/Off etmek ucun iwledecem. */
+		); /* WiFi-i On/Off etmek ucun iwledecem. */
 
 
 
@@ -61,14 +64,14 @@ namespace MainProject.Helpers
 #if TEST
 						TestHelpers.CustomizeConsole($"Reconnecter - {SSID}");
 #endif
-                        return SSID;
+						return SSID;
 					}
 					else /* WiFi-ye qowulmamiwamsa */
 					{
 #if TEST
 						TestHelpers.CustomizeConsole();
 #endif
-                        return null;
+						return null;
 					}
 				}
 
@@ -79,7 +82,7 @@ namespace MainProject.Helpers
 #if TEST
                 TestHelpers.CustomizeConsole();
 #endif
-                return null;
+				return null;
 			}
 		}
 
@@ -123,13 +126,13 @@ namespace MainProject.Helpers
 		{
 			if(activeInterface != null)
 			{
-                /* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki connect emri. */
+				/* Wi-Fi-ye avtomatik baglanmaq quwu qoyulmayibsa, awagidaki baglanma emri iwlemeyecek ve "Hazirda wifiye baglanmamisan..." mesaji spamlanacaq, quw qoydugumuz anda icra olunacaq awagidaki connect emri. */
 
-                ProcessHelpers.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" disabled ", out _);
+				ProcessHelpers.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" disabled ", out _);
 				Thread.Sleep(50);
-                ProcessHelpers.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" enabled ", out _);
+				ProcessHelpers.StartProcess("netsh.exe", $"netsh interface set interface \"{activeInterface.Name}\" enabled ", out _);
 
-                ProcessHelpers.StartProcess("netsh.exe", $"wlan connect ssid={SSID}", out _); /* ProcessHelpers.StartProcess("netsh.exe", "wlan disconnect", out _); */
+				ProcessHelpers.StartProcess("netsh.exe", $"wlan connect ssid={SSID}", out _); /* ProcessHelpers.StartProcess("netsh.exe", "wlan disconnect", out _); */
 
 				Thread.Sleep(1000); /* WiFi-ye baglandiqdan sonra her ehtimala qarwi 1 deyqe gozle. (Test ucundur: hazirda, wifi-ye sonsuz reconnect etmeye caliwir, wifiye giren saniye internet baglantisi yoxlayir ve baglantinin olmagiyla qarwilawmir hemin saniye deye, tezeden reconnect etmeye caliwir, threadi 1 saniye gozlet wifiye baglandiqdan, yeni reconnect etdikden sonra ve gor problem hell olur?) */
 			}
@@ -137,17 +140,17 @@ namespace MainProject.Helpers
 					TestHelpers.CustomizeConsole();
 					Console.WriteLine("Kompyuterinizde hec bir network interfeysi aktiv deyil...";
 #endif
-        }
+		}
 
 
 
-        /// <summary>
-        /// Butun prosesler bu metodun icerisinde baw verir.
-        /// </summary>
-        /// <param name="cancelToken">Metodun iwin sonlandirmaq ucundur.</param>
-        /// <param name="Interval">Hansi araliqlarla yoxlaniw aparilsin.</param>
-        /// <param name="URL">Internetin olub-olmadigini yoxlamaq ucun hansi endpointe sorgu gonderilsin.</param>
-        public static void CheckOverallStatus(CancellationToken cancelToken, double Interval, string URL)
+		/// <summary>
+		/// Butun prosesler bu metodun icerisinde baw verir.
+		/// </summary>
+		/// <param name="cancelToken">Metodun iwin sonlandirmaq ucundur.</param>
+		/// <param name="Interval">Hansi araliqlarla yoxlaniw aparilsin.</param>
+		/// <param name="URL">Internetin olub-olmadigini yoxlamaq ucun hansi endpointe sorgu gonderilsin.</param>
+		public static void CheckOverallStatus(CancellationToken cancelToken, double Interval, string URL)
 		{
 			while(!cancelToken.IsCancellationRequested)
 			{
@@ -182,7 +185,7 @@ namespace MainProject.Helpers
 					TestHelpers.CustomizeConsole();
 #endif
 
-                    ReconnectToWifi(WifiSsid);
+					ReconnectToWifi(WifiSsid);
 				}
 
 				Thread.Sleep(TimeSpan.FromSeconds(Interval));
